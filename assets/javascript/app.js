@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-
-     <title>Bootstrap & Google maps Tutorial by Bootstrapious.com</title>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-     <link href='assets/css/style.css' rel='stylesheet' type='text/css'>
-
-</head>
-
-<div id="Overlaypanel" style = "float:left">
-    <!-- <input type="submit" value="Toggle Census" onclick="toggleLayer('MDcensus');"/>
-
-      <input onclick="showOverlays();"   type=button  value="Show Marker" size="8">
-      <input onclick="deleteOverlays();" type=button  value="Delete Markers" size="8"> -->
-      <input type="text" value="" onfocus= "this.value = '';" placeholder= "Find Loacation" id= "search_address"  size="15">
-      <button onclick="search();">GO</button>
-</div> <!-- end div Overlaypanel  -->
-
-  <body onload="initialize()">
-  <div id="map-canvas" style="width:auto; height:595px; margin:10 5 10 5; padding: 15px; border: 10px solid #000;"></div> <!---->
-
-
-  <!-- JavaScript -->
-  <script src="assets/javascript/app.js"></script>
-
-</body>
-
-</html>
+// API KEY AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I
 
 <script type="text/javascript">
   //this is JQuery
@@ -44,7 +12,7 @@ var mapkml;
 var map;
 var marker = null;
 var poly;
-
+var elevator;
 var UMD = new google.maps.LatLng(38.98982735892874, -76.94305801443988);
 
 var markersArray = [];
@@ -312,12 +280,11 @@ function search() {
 } //end function search
 
 
+
+
+
+
+
 google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>
-
-<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I"></script>
-<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,places,drawing,visualization,drawing&sensor=false"></script>
-<script src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=visualization"> </script>
