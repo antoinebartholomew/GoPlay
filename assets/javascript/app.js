@@ -1,11 +1,6 @@
 // API KEY AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I
 
-<script type="text/javascript">
-  //this is JQuery
-function $(id) {
-        return document.getElementById(id);
-}
-
+<script>
 var mapkml;
 
 

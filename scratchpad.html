@@ -1,0 +1,368 @@
+<html>
+
+AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I
+
+<html>
+<head>
+
+     <title>Bootstrap & Google maps Tutorial by Bootstrapious.com</title>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!-- Bootstrap -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <!-- Firebase Reference -->
+     <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+     <link href='assets/css/style.css' rel='stylesheet' type='text/css'>
+
+</head>
+  <body onload="initialize()">
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <h1>Google maps & Bootstrap tutorial from <a href="http://bootstrapious.com">Bootstrapious.com</a></h1>
+
+                    <p class="lead">This is a demo for our tutorial showing you how to add a custom styled Google maps into a Bootstrap page.</p>
+
+                    <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
+
+                    <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+
+                    <!-- <div id="Overlaypanel" > -->
+                        <!-- <input type="submit" value="Toggle Census" onclick="toggleLayer('MDcensus');"/>
+
+                          <input onclick="showOverlays();"   type=button  value="Show Marker" size="8">
+                          <input onclick="deleteOverlays();" type=button  value="Delete Markers" size="8"> -->
+                          <input type="text" value="" onfocus= "this.value = '';" placeholder= "Find Loacation" id= "search_address"  size="15">
+                          <button onclick="search();">Search</button>
+                    <!-- </div>   -->
+                </div>
+
+                <div id="map" style="width:auto; height:595px; margin:10 5 10 5; padding: 15px; border: 10px solid #000;"></div> <!---->
+
+            </div>
+
+        </div>
+
+
+</body>
+
+<script>
+
+function initialize()
+{
+    var goo             = google.maps,
+
+        shapes          = [],
+        selected_shape  = null,
+        drawman         = new goo.drawing.DrawingManager({map:map_in}),
+        byId            = function(s){return document.getElementById(s)},
+        clearSelection  = function(){
+                            if(selected_shape){
+                              selected_shape.set((selected_shape.type
+                                                  ===
+                                                  google.maps.drawing.OverlayType.MARKER
+                                                 )?'draggable':'editable',false);
+                              selected_shape = null;
+                            }
+                          },
+        setSelection    = function(shape){
+                            clearSelection();
+                            selected_shape=shape;
+
+                              selected_shape.set((selected_shape.type
+                                                  ===
+                                                  google.maps.drawing.OverlayType.MARKER
+                                                 )?'draggable':'editable',true);
+
+                          },
+        clearShapes     = function(){
+                            for(var i=0;i<shapes.length;++i){
+                              shapes[i].setMap(null);
+                            }
+                            shapes=[];
+                          };
+    map_in.bindTo('center',map_out,'center');
+    map_in.bindTo('zoom',map_out,'zoom');
+
+    goo.event.addListener(drawman, 'overlaycomplete', function(e) {
+        var shape   = e.overlay;
+        shape.type  = e.type;
+        goo.event.addListener(shape, 'click', function() {
+          setSelection(this);
+        });
+        setSelection(shape);
+        shapes.push(shape);
+      });
+
+    goo.event.addListener(map_in, 'click',clearSelection);
+    goo.event.addDomListener(byId('clear_shapes'), 'click', clearShapes);
+    goo.event.addDomListener(byId('save_encoded'), 'click', function(){
+      var data=IO.IN(shapes,true);byId('data').value=JSON.stringify(data);});
+    goo.event.addDomListener(byId('save_raw'), 'click', function(){
+      var data=IO.IN(shapes,false);byId('data').value=JSON.stringify(data);});
+    goo.event.addDomListener(byId('restore'), 'click', function(){
+      if(this.shapes){
+        for(var i=0;i<this.shapes.length;++i){
+              this.shapes[i].setMap(null);
+        }
+      }
+      this.shapes=IO.OUT(JSON.parse(byId('data').value),map_out);
+    });
+
+}
+
+
+var IO={
+  //returns array with storable google.maps.Overlay-definitions
+  IN:function(arr,//array with google.maps.Overlays
+              encoded//boolean indicating whether pathes should be stored encoded
+              ){
+      var shapes     = [],
+          goo=google.maps,
+          shape,tmp;
+
+      for(var i = 0; i < arr.length; i++)
+      {
+        shape=arr[i];
+        tmp={type:this.t_(shape.type),id:shape.id||null};
+
+
+        switch(tmp.type){
+           case 'CIRCLE':
+              tmp.radius=shape.getRadius();
+              tmp.geometry=this.p_(shape.getCenter());
+            break;
+           case 'MARKER':
+              tmp.geometry=this.p_(shape.getPosition());
+            break;
+           case 'RECTANGLE':
+              tmp.geometry=this.b_(shape.getBounds());
+             break;
+           case 'POLYLINE':
+              tmp.geometry=this.l_(shape.getPath(),encoded);
+             break;
+           case 'POLYGON':
+              tmp.geometry=this.m_(shape.getPaths(),encoded);
+
+             break;
+       }
+       shapes.push(tmp);
+    }
+
+    return shapes;
+  },
+  //returns array with google.maps.Overlays
+  OUT:function(arr,//array containg the stored shape-definitions
+               map//map where to draw the shapes
+               ){
+      var shapes     = [],
+          goo=google.maps,
+          map=map||null,
+          shape,tmp;
+
+      for(var i = 0; i < arr.length; i++)
+      {
+        shape=arr[i];
+
+        switch(shape.type){
+           case 'CIRCLE':
+              tmp=new goo.Circle({radius:Number(shape.radius),center:this.pp_.apply(this,shape.geometry)});
+            break;
+           case 'MARKER':
+              tmp=new goo.Marker({position:this.pp_.apply(this,shape.geometry)});
+            break;
+           case 'RECTANGLE':
+              tmp=new goo.Rectangle({bounds:this.bb_.apply(this,shape.geometry)});
+             break;
+           case 'POLYLINE':
+              tmp=new goo.Polyline({path:this.ll_(shape.geometry)});
+             break;
+           case 'POLYGON':
+              tmp=new goo.Polygon({paths:this.mm_(shape.geometry)});
+
+             break;
+       }
+       tmp.setValues({map:map,id:shape.id})
+       shapes.push(tmp);
+    }
+    return shapes;
+  },
+  l_:function(path,e){
+    path=(path.getArray)?path.getArray():path;
+    if(e){
+      return google.maps.geometry.encoding.encodePath(path);
+    }else{
+      var r=[];
+      for(var i=0;i<path.length;++i){
+        r.push(this.p_(path[i]));
+      }
+      return r;
+    }
+  },
+  ll_:function(path){
+    if(typeof path==='string'){
+      return google.maps.geometry.encoding.decodePath(path);
+    }
+    else{
+      var r=[];
+      for(var i=0;i<path.length;++i){
+        r.push(this.pp_.apply(this,path[i]));
+      }
+      return r;
+    }
+  },
+
+  m_:function(paths,e){
+    var r=[];
+    paths=(paths.getArray)?paths.getArray():paths;
+    for(var i=0;i<paths.length;++i){
+        r.push(this.l_(paths[i],e));
+      }
+     return r;
+  },
+  mm_:function(paths){
+    var r=[];
+    for(var i=0;i<paths.length;++i){
+        r.push(this.ll_.call(this,paths[i]));
+
+      }
+     return r;
+  },
+  p_:function(latLng){
+    return([latLng.lat(),latLng.lng()]);
+  },
+  pp_:function(lat,lng){
+    return new google.maps.LatLng(lat,lng);
+  },
+  b_:function(bounds){
+    return([this.p_(bounds.getSouthWest()),
+            this.p_(bounds.getNorthEast())]);
+  },
+  bb_:function(sw,ne){
+    return new google.maps.LatLngBounds(this.pp_.apply(this,sw),
+                                        this.pp_.apply(this,ne));
+  },
+  t_:function(s){
+    var t=['CIRCLE','MARKER','RECTANGLE','POLYLINE','POLYGON'];
+    for(var i=0;i<t.length;++i){
+       if(s===google.maps.drawing.OverlayType[t[i]]){
+         return t[i];
+       }
+    }
+  }
+  
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+</script>
+
+
+
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true&libraries=drawing,geometry"></script>
+
+<script>
+var coordinates = [];
+var all_shapes = [];
+
+var selectedShape;
+</script>
+
+<script>
+function draw_shape()
+{
+    for(var i = 0; i < all_shapes.length; i++)
+    {
+        all_shapes[i].setMap(null);
+    }
+
+    for(var i = 0; i < all_shapes.length; i++)
+    {
+        all_shapes[i].setMap(map);
+    }
+}
+</script>
+
+<script>
+function clearSelection()
+{
+    if(selectedShape)
+    {
+        selectedShape.setEditable(false);
+        selectedShape = null;
+    }
+}
+
+function setSelection(shape)
+{
+    clearSelection();
+    selectedShape = shape;
+    shape.setEditable(true);
+}
+
+function deleteSelectedShape()
+{
+    if (selectedShape)
+    {
+        selectedShape.setMap(null);
+    }
+}
+</script>
+
+<script>
+function save_coordinates_to_array(newShapeArg)
+{
+    if(newShapeArg.type == google.maps.drawing.OverlayType.POLYGON)
+    {
+        var polygonBounds = newShapeArg.getPath();
+
+        for(var i = 0 ; i < polygonBounds.length ; i++)
+        {
+            coordinates.push(polygonBounds.getAt(i).lat(), polygonBounds.getAt(i).lng());
+        }
+    }
+    else
+    {
+        //alert("Not polygon");/////////////
+    }
+}
+</script>
+
+<script>
+var map;
+
+function initialize()
+{
+    map = new google.maps.Map(document.getElementById('map'), {zoom: 12, center: new google.maps.LatLng(32.344, 51.048)});
+
+    var drawingManager = new google.maps.drawing.DrawingManager();
+    drawingManager.setMap(map);
+
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
+        var newShape = e.overlay;
+        newShape.type = e.type;
+
+        all_shapes.push(newShape);
+
+        setSelection(newShape);
+
+        save_coordinates_to_array(newShape);
+
+        google.maps.event.addListener(newShape, 'click', function() {setSelection(newShape)});
+      });
+
+    google.maps.event.addListener(map, 'click', function(e) {clearSelection();});
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+</html>
