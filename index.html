@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Drawing tools</title>
+    <title>Go Play! </title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -13,10 +13,11 @@
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
     <link href='assets/css/style.css' rel='stylesheet' type='text/css'>
 
-
     <style>
 
     </style>
+
+
   </head>
       <body >
             <div class="container">
@@ -26,14 +27,26 @@
                     <div class="col-md-4">
 
                         <h1>Google maps & Bootstrap tutorial from <a href="http://bootstrapious.com">Bootstrapious.com</a></h1>
-
-                        <p class="lead">This is a demo for our tutorial showing you how to add a custom styled Google maps into a Bootstrap page.</p>
-
-                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
-
+                       <div id="info"></div>
+                        <form>
+                          <div class="form-group">
+                            <label for="train-name ">Train Name</label>
+                            <input class="form-control" id="train-name" type="text">
+                          </div>
+                          <div class="form-group">
+                            <label for="Destination">Destination</label>
+                            <input class="form-control" id="Destination" type="text">
+                          </div>
+                          <button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
+                        </form>
+                        <div id="floating-panel">
+                          <input onclick="clearMarkers();" type=button value="Hide Markers">
+                          <input onclick="showMarkers();" type=button value="Show All Markers">
+                          <!-- <input onclick="deleteMarkers();" type=button value="Delete Markers"> -->
+                        </div>
                         <input type="text" value="" onfocus= "this.value = '';" placeholder= "Find Loacation" id= "search_address"  size="15">
                         <button onclick="search();">Search</button>
-                        <input id="save_raw"     value="save raw(IO.IN(shapes,false))"        type="button" />
+                        <input id="save_raw"     value="save polygon"        type="button" />
                         <input id="data"         value=""                style="width:100%" readonly/>
 
                     </div>
@@ -47,147 +60,6 @@
 
     </body>
 
-
-    <script>
-
-
-    var map;
-    var coordinates = [];
-    var all_shapes = [];
-    var selectedShape;
-    var database = firebase.database();
-    /** Data object to be written to Firebase.  */
-      var data = {
-        sender: null,
-        timestamp: null,
-        lat: null,
-        lng: null
-      };
-
-
-
-    function draw_shape()
-    {
-        for(var i = 0; i < all_shapes.length; i++)
-        {
-            all_shapes[i].setMap(null);
-        }
-
-        for(var i = 0; i < all_shapes.length; i++)
-        {
-            all_shapes[i].setMap(map);
-        }
-    }
-
-
-
-    function clearSelection()
-    {
-        if(selectedShape)
-        {
-            selectedShape.setEditable(false);
-            selectedShape = null;
-        }
-    }
-
-    function setSelection(shape)
-    {
-        clearSelection();
-        selectedShape = shape;
-        shape.setEditable(true);
-    }
-
-    function deleteSelectedShape()
-    {
-        if (selectedShape)
-        {
-            selectedShape.setMap(null);
-        }
-    }
-
-    function save_coordinates_to_array(newShapeArg)
-    {
-        if(newShapeArg.type == google.maps.drawing.OverlayType.POLYGON)
-        {
-            var polygonBounds = newShapeArg.getPath();
-
-            for(var i = 0 ; i < polygonBounds.length ; i++)
-            {
-                coordinates.push(polygonBounds.getAt(i).lat(), polygonBounds.getAt(i).lng());
-            }
-        }
-        else
-        {
-            //alert("Not polygon");/////////////
-        }
-    }
-
-    function markerCoords(markerobject){
-    google.maps.event.addListener(markerobject, 'dragend', function(evt){
-        infoWindow.setOptions({
-            content: '<p>Marker dropped: Current Lat: ' + evt.latLng.lat().toFixed(3) + ' Current Lng: ' + evt.latLng.lng().toFixed(3) + '</p>'
-        });
-        infoWindow.open(map, markerobject);
-    });
-
-    google.maps.event.addListener(markerobject, 'drag', function(evt){
-        console.log("marker is being dragged");
-    });
-}
-
-
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 8
-        });
-
-        var drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: google.maps.drawing.OverlayType.MARKER,
-          drawingControl: true,
-          drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: [
-              google.maps.drawing.OverlayType.MARKER,
-              google.maps.drawing.OverlayType.POLYGON
-            ]
-          },
-          markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
-          circleOptions: {
-            fillColor: '#ffff00',
-            fillOpacity: 1,
-            strokeWeight: 5,
-            clickable: false,
-            editable: true,
-            zIndex: 1
-          }
-        });
-
-        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-            var newShape = e.overlay;
-            newShape.type = e.type;
-
-            all_shapes.push(newShape);
-
-            setSelection(newShape);
-
-            save_coordinates_to_array(newShape);
-
-            google.maps.event.addListener(newShape, 'click', function() {setSelection(newShape)});
-          });
-
-            google.maps.event.addListener(map, 'click', function(e) {clearSelection();});
-
-        drawingManager.setMap(map);
-        map.setCenter(marker.position);
-        marker.setMap(map);
-      }  //END init Map
-
-      //google.maps.event.addDomListener(window, 'load', init);
-
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I&libraries=visualization,drawing&callback=initMap"async defer></script>
-
     <script>
       // Initialize Firebase
       var config = {
@@ -198,6 +70,135 @@
         storageBucket: "",
         messagingSenderId: "554942210651"
       };
-  firebase.initializeApp(config);
-</script>
+
+      firebase.initializeApp(config);
+
+
+      var map;
+      var userPolygon;
+      var polygonArray = [];
+      var marker = [];
+      var database = firebase.database();
+
+
+      // 2. Button for adding Employees
+      $("#add-train-btn").on("click", function(event) {
+        event.preventDefault();
+
+        // Grabs user input
+        var trainName = $("#train-name").val().trim();
+        var Destination = $("#Destination").val().trim();
+
+        // Creates local "temporary" object for holding employee data
+        var newTrain = {
+          name: trainName,
+          whereTo: Destination
+        };
+
+        // Uploads employee data to the database
+        database.ref().push(newTrain);
+        // Logs everything to console
+        console.log(trainName.name);
+        console.log(Destination.whereTo);
+        // Alert
+        //alert("New Train Time successfully added");
+        // Clears all of the text-boxes
+        $("#train-name").val("");
+        $("#Destination").val("");
+
+      });
+
+      $("#add-polygon-btn").on("click", function(event) {
+        event.preventDefault();
+
+        // Grabs user input
+        var Destination = $("#Destination").val().trim();
+        //var PolyInput = $(this.polygon).val().trim();
+
+        // Creates local "temporary" object for holding employee data
+        var newPolygon = {
+          name: polygonName,
+          whereTo: Destination
+        };
+
+        // Uploads employee data to the database
+        database.ref().push(newPolygon);
+        // Logs everything to console
+        console.log(ploygonName.name);
+        console.log(Destination.whereTo);
+        // Alert
+        //alert("New Train Time successfully added");
+        // Clears all of the text-boxes
+        $("#train-name").val("");
+        $("#Destination").val("");
+
+      });
+
+
+      function initMap() {
+        var myLatlng = new google.maps.LatLng (38.95940879245423, -81.8701171875);
+
+        var myOptions = {
+         zoom: 8,
+         center: myLatlng,
+         mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+
+        map = new google.maps.Map(document.getElementById('map'), myOptions);
+
+        var drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.POLYGON,
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: ['circle', 'polygon']
+        },
+            markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+            circleOptions: {
+              fillColor: '#ffff00',
+              fillOpacity: 1,
+              strokeWeight: 5,
+              clickable: false,
+              editable: true,
+              zIndex: 1
+            }
+          });
+            drawingManager.setMap(map);
+
+        google.maps.event.addListener(map, 'dblclick', function(event) {
+          var latitude = event.latLng.lat();
+          var longitude = event.latLng.lng();
+          console.log( latitude + ', ' + longitude );
+            //alert(event.latLng);
+        });
+        google.maps.event.addListener(drawingManager, 'circlecomplete', function(circle) {
+          var radius = circle.getRadius();
+          console.log(circle);
+        });
+        google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
+              var polyLength = polygon.getPath().getLength();
+              for (var i = 0; i < polyLength; i++) {
+                  var poly = polygon.getPath().getAt(i).toUrlValue(6);
+                  //polygonArray.push(poly);
+                    polygonArray[polygonArray.length - 1].push(poly);
+                  //polygonArray.pop(poly);
+
+                  //// Uploads employee data to the database
+                  database.ref().push(polygonArray);
+              }
+              console.log(polygonArray);
+          });
+
+        } // end inti fuction
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I&libraries=geometry,drawing&callback=initMap"></script>
+
+    <!-- Link Javascript File -->
+     <script type="text/javascript" src="assets/javascript/app.js"></script>
+     <script type="text/javascript" src="assets/javascript/clustermarkers.js"></script>
+
 </html>
