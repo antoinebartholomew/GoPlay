@@ -179,8 +179,8 @@
               var polyLength = polygon.getPath().getLength();
               for (var i = 0; i < polyLength; i++) {
                   var poly = polygon.getPath().getAt(i).toUrlValue(6);
-                  //polygonArray.push(poly);
-                    polygonArray[polygonArray.length - 1].push(poly);
+                  polygonArray.push(poly);
+                  //  polygonArray[polygonArray.length - 1].push(poly);
                   //polygonArray.pop(poly);
 
                   //// Uploads employee data to the database
