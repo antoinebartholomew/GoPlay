@@ -16,3 +16,13 @@ Home page; links you to all other pages and also provides a link to the overall 
 The second page is where the user can draw (using the Google Maps draw tool) a polygon on the map to identify sporting infrastructure.  After the user draws their polygon, it can be saved into a FIREBASE database.  
 The next page is called the markers page, here, user drop a point on the map indicating what sporting infrastructure facilities they are using and provide some general information about themselves
 The third page is called the all data page.  This page is all the data captured within the application combined and visualized together.  Polygon/KMZ data combined with cluster markers representing user activity.  
+
+
+
+API's to connect with
+
+Nike - http://dev.nike.com/activities/list_users_activities
+
+MyFitnessPal - http://www.myfitnesspal.com/api
+
+Under Armor - https://developer.underarmour.com/docs/
