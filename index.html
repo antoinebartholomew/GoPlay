@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
     <!-- Firebase Reference -->
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
@@ -30,8 +31,8 @@
 
                         <h1>Welcom to GoPlay Powered by Google Maps API <a href="">GoPlay.com</a></h1>
                        <div id="info"></div>
-                       <form method="post" name="contactForm">
-                       <div class="form-group">
+                       <form>
+                         <div class="form-group">
                          <label for="name">Name</label>
                          <input type="text" class="form-control" id="name" required placeholder="Enter name">
                        </div>
@@ -39,7 +40,7 @@
                          <label for="email">Email</label>
                          <input type="email" class="form-control" id="email" required placeholder="Enter Email">
                        </div>
-                       <h3>Location</h3>
+                       <h3>coordinates</h3>
                        <div class="form-group">
                          <label for="city">City</label>
                          <input type="text" class="form-control" id="city" placeholder="Enter City">
@@ -53,7 +54,18 @@
                          <input type="text" class="form-control" id="zip" placeholder="Enter Zip Code">
                        </div>
                        <button type="submit" class="btn btn-primary addValue">Submit</button>
-                     </form>
+                         <div class="form-group">
+                           <label for="train-name ">Train Name</label>
+                           <input class="form-control" id="train-name" type="text">
+                         </div>
+                         <div class="form-group">
+                           <label for="Destination">Destination</label>
+                           <input class="form-control" id="Destination" type="text">
+                         </div>
+                         <button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
+                       </form>
+                       <button onclick="firebasepolygon()">Polygon </button>
+                       <button onclick="firebasemarkers()">Markers </button>
                     </div>
 
                     <div id="map" style="width:auto; height:595px; margin:10 5 10 5; padding: 15px; border: 10px solid #000;"></div> <!---->
@@ -80,32 +92,27 @@
 
 
       var map;
-      var userPolygon;
       var polygonArray = [];
-      var marker = [];
-      var database = firebase.database();
-      var dbRef = firebase.database();
-      var contactsRef = dbRef.ref('contacts');
 
-      //load older conatcts as well as any newly added one...
-      contactsRef.on("child_added", function(snap) {
-        //console.log("added", snap.key(), snap.val());
-        document.querySelector('#contacts')
-          //.innerHTML += contactHtmlFromObject(snap.val());
-      });
+      var locations = [];
+      var database = firebase.database();
+      var PolygonTypeRef = database.ref('polygonDetails');
+      var dbRef = firebase.database();
+      var userInfoRef = dbRef.ref('userInfo');
 
       //save contact
       document.querySelector('.addValue')
         .addEventListener("click", function( event ) {
           event.preventDefault();
+
           if( document.querySelector('#name').value != ''
                 || document.querySelector('#email').value != '' ){
-            contactsRef.push({
+            userInfoRef.push({
               name: document.querySelector('#name').value,
               email: document.querySelector('#email').value,
-              location: {
-                city: document.querySelector('#city').value,
-                state: document.querySelector('#state').value,
+              coordinates: {
+                city1: document.querySelector('#city').value,
+                 state: document.querySelector('#state').value,
                 zip: document.querySelector('#zip').value
 
               }
@@ -118,13 +125,50 @@
         },
             false);
 
+      // // 2. Button for adding Employees
+      // $("#add-train-btn").on("click", function(event) {
+      //   event.preventDefault();
+      //   // Grabs user input
+      //   var trainName = $("#train-name").val().trim();
+      //   var Destination = $("#Destination").val().trim();
+      //   // Creates local "temporary" object for holding employee data
+      //   var newTrain = {
+      //     name: trainName,
+      //     whereTo: Destination
+      //   };
+      //   // Uploads employee data to the database
+      //   database.ref(userInfo).push(newTrain);
+      //   // Logs everything to console
+      //   console.log(trainName.name);
+      //   console.log(Destination.whereTo);
+      //   // Alert
+      //   //alert("New Train Time successfully added");
+      //   // Clears all of the text-boxes
+      //   $("#train-name").val("");
+      //   $("#Destination").val("");
+      // });
+
+      function firebasePolygons () {
+        
+      }
+
+      function firebaseMarkers () {
+
+      }
+
 
       function initMap() {
-        var myLatlng = new google.maps.LatLng (38.81707399543383, -77.04867482185364);
+        var myLatlng = new google.maps.LatLng (-28, 137);
 
         var myOptions = {
          zoom: 14,
+         zoomControl: true,
+         zoomControlOptions: {
+         style: google.maps.ZoomControlStyle.LARGE,
+         position: google.maps.ControlPosition.LEFT_TOP},
          center: myLatlng,
+         disableDoubleClickZoom: true,
+         panControlOptions: {position: google.maps.ControlPosition.TOP_LEFT},
          mapTypeId: google.maps.MapTypeId.ROADMAP
         }
 
@@ -135,7 +179,7 @@
         drawingControl: true,
         drawingControlOptions: {
           position: google.maps.ControlPosition.TOP_CENTER,
-          drawingModes: ['circle', 'polygon']
+          drawingModes: ['circle', 'marker', 'polygon']
         },
             markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
             circleOptions: {
@@ -151,12 +195,12 @@
 
         drawingManager.setMap(map);
 
-        google.maps.event.addListener(map, 'dblclick', function(event) {
-          var latitude = event.latLng.lat();
-          var longitude = event.latLng.lng();
-          console.log( latitude + ', ' + longitude );
-            //alert(event.latLng);
-        });
+        // google.maps.event.addListener(map, 'dblclick', function(event) {
+        //   var latitude = event.latLng.lat();
+        //   var longitude = event.latLng.lng();
+        //   console.log( latitude + ', ' + longitude );
+        //     //alert(event.latLng);
+        // });
 
         google.maps.event.addListener(drawingManager, 'circlecomplete', function(circle) {
           var radius = circle.getRadius();
@@ -165,18 +209,72 @@
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
               var polyLength = polygon.getPath().getLength();
+              //   console.log(polyLength);
               for (var i = 0; i < polyLength; i++) {
                   var poly = polygon.getPath().getAt(i).toUrlValue(6);
                   polygonArray.push(poly);
                   //// Uploads employee data to the database
-                  database.ref('contacts').push(polygonArray);
+                  database.ref('userInfo/coordinates').push(polygonArray);
+                  //database.ref().push(polygonArray[polygonArray.length-1]);
                   //// Uploads employee data to the database
                   //database.ref().push(polygonArray);
               }
               console.log(polygonArray);
           });
 
+          //http://jsfiddle.net/geocodezip/b4orpLv3/2/
+          //https://stackoverflow.com/questions/46261237/add-markers-to-google-maps-that-will-go-into-a-marker-cluster
+          var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+          var markers = locations.map(function(location, i) {
+            return new google.maps.Marker({
+              position: location,
+              userName: name,
+              activity: activity,
+              label: labels[i % labels.length]
+            });
+          });
+
+          function addMarker(location) {
+            var marker = new google.maps.Marker({
+              position: location,
+              map: map
+            });
+            markerCluster.addMarker(marker);
+            database.ref('userInfo/clustermarkers').push(markers);
+          }
+
+          //Add Marker click function
+          map.addListener('dblclick', function(event) {
+            addMarker(event.latLng);
+            markers.lat = event.latLng.lat();
+          markers.lng = event.latLng.lng();
+          //addToFirebase(markers);
+            console.log(locations);
+          });
+
+          // Add a marker cluster to manage the markers.
+          var markerCluster = new MarkerClusterer(map, markers, {
+            imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+          });
+
+
         } // end inti fuction
+
+        /////////////////
+        //Get data OUT of Firebase
+        ////////////////
+
+        // var = firebasePolygons = [];
+        // var = firebaseMarkers = [];
+        //
+        // map.data.add({geometry: new google.maps.Data.Polygon([firebasePolygons,
+        //                                               firebaseMarkers
+        //                                                 ])})
+        // https://stackoverflow.com/questions/28596237/loading-a-geojson-object-directly-into-google-maps-v3
+        //     map.data.addGeoJson();
+        //
+        // }
 
       google.maps.event.addDomListener(window, 'load', initMap);
 
