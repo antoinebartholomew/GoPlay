@@ -1,0 +1,70 @@
+#container{
+	width: 1200px;
+	margin: 0 auto;
+}
+
+#header{
+
+	margin: 2px 0 0 0; /* Top 10 , right 0, bottom 0, left 0 */
+}
+
+
+#nav {
+	width: 1200px;
+	overflow: hidden;
+}
+
+#nav a {
+	height: 40px;
+	width: 290px; /* this number needs to be X / 1200px (ie 4X287 = 1148 and this will fit within a 1200 px container) or the size of your container total size*/ 
+	
+	float:left;
+        padding: 2px 0 2px 0;
+	text-align: center;
+	
+	border-left: 5px solid;
+	border-bottom: 5px solid;
+	border-top: 5px solid;
+	border-right: 5px solid;
+	margin: 1px auto;
+	
+    text-decoration:none;
+    text-transform: uppercase;
+    font-weight: bold;
+    
+    background-color: 	#000000 ;
+}
+
+#nav a:hover {
+	
+	text-decoration: none;
+	color: #0000FF; /* blue color for menu items */
+	
+}
+
+
+#menu{    /* the left hand menu area*/
+	background-color:#F8F8F8; /* change the color of the left hand menu background*/
+	width:90px;
+	height:1000px;
+	float:left;
+	padding: 5px;
+	border-left: 5px solid;
+	border-bottom: 5px solid;
+	border-top: 5px solid;
+}
+
+#content{
+	height: 990px;
+	width: 1170px;
+	padding: 10px;
+	float: left;
+	border-right: 5px solid; /* change the color of the right side border of the content area*/
+	border-left: 5px solid;
+	border-bottom: 5px solid;
+	border-top: 5px solid;
+	text-align: left;
+	font-family: Arial, "MS Trebuchet", sans-serif;
+	font-size:18px;
+	background-color:#B8B8B8;
+}
