@@ -30,7 +30,10 @@
                     <div class="col-md-4">
 
                         <h1>Welcom to GoPlay Powered by Google Maps API <a href="">GoPlay.com</a></h1>
-                       <div id="info"></div>
+                       <div id="info">
+                         <button class="btn btn-success" type="button" id="firebasePolygons" onclick="firebasePolygons()">Polygon </button>
+                        <button class="btn btn-success" type="button" id="firebaseMarkers" onclick="firebaseMarkers()">Markers </button>
+                      </div>
                        <form>
                          <div class="form-group">
                          <label for="name">Name</label>
@@ -64,8 +67,7 @@
                          </div>
                          <button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
                        </form>
-                       <button onclick="firebasepolygon()">Polygon </button>
-                       <button onclick="firebasemarkers()">Markers </button>
+
                     </div>
 
                     <div id="map" style="width:auto; height:595px; margin:10 5 10 5; padding: 15px; border: 10px solid #000;"></div> <!---->
@@ -93,12 +95,15 @@
 
       var map;
       var polygonArray = [];
+      // var = firebasePolygons = ['https://goplay-f0808.firebaseio.com/userInfo/coordinates'];
+      //var = firebaseMarkers = [https://goplay-f0808.firebaseio.com/userInfo/clustermarkers.json];
+
 
       var locations = [];
       var database = firebase.database();
-      var PolygonTypeRef = database.ref('polygonDetails');
-      var dbRef = firebase.database();
-      var userInfoRef = dbRef.ref('userInfo');
+      //var PolygonTypeRef = database.ref('polygonDetails');
+      //var dbRef = firebase.database();
+      //var userInfoRef = dbRef.ref('userInfo');
 
       //save contact
       document.querySelector('.addValue')
@@ -125,40 +130,81 @@
         },
             false);
 
-      // // 2. Button for adding Employees
-      // $("#add-train-btn").on("click", function(event) {
-      //   event.preventDefault();
-      //   // Grabs user input
-      //   var trainName = $("#train-name").val().trim();
-      //   var Destination = $("#Destination").val().trim();
-      //   // Creates local "temporary" object for holding employee data
-      //   var newTrain = {
-      //     name: trainName,
-      //     whereTo: Destination
-      //   };
-      //   // Uploads employee data to the database
-      //   database.ref(userInfo).push(newTrain);
-      //   // Logs everything to console
-      //   console.log(trainName.name);
-      //   console.log(Destination.whereTo);
-      //   // Alert
-      //   //alert("New Train Time successfully added");
-      //   // Clears all of the text-boxes
-      //   $("#train-name").val("");
-      //   $("#Destination").val("");
-      // });
 
-      function firebasePolygons () {
-        
-      }
+      function firebasePolygons (map) {
 
-      function firebaseMarkers () {
+        // 3. Create Firebase event for adding employee to the database and a row in the html when a user adds an entry
+        database.ref('userInfo/coordinates').on("value", function(childSnapshot, prevChildKey) {
+
+          console.log(childSnapshot.val());
+
+          var poly = childSnapshot.val().name;
+
+
+
+          //firebasePolygons.setMap(map)
+          //poly.Polygons.set(map);
+
+
+        });
+
+
+
 
       }
 
+
+
+
+     function firebaseMarkers (map) {
+
+
+        // 3. Create Firebase event for adding employee to the database and a row in the html when a user adds an entry
+        database.ref('userInfo/clustermarkers').on("value", function(childSnapshot, prevChildKey) {
+
+          console.log(childSnapshot.val());
+          //new = markersFromFirebase = snapshot.val();
+          //curl 'https://goplay-f0808.firebaseio.com/userInfo/clustermarkers.json'
+          // Get that click from firebase.
+           //var newPosition = snapshot.val();
+          //  var point = new google.maps.LatLng(newPosition.lat, newPosition.lng);
+          //var poly = childSnapshot.val().name;
+
+
+
+          //firebasePolygons.setMap(map)
+          //poly.Polygons.set(map);
+
+
+        });
+     }
+
+
+
+
+
+//  // pass the initialised map to the function
+//
+//         var database = firebase.database();
+//         database.ref('userInfo/clustermarkers').ones('value', points => {
+//             points.forEach(point=>{
+//                 marker = new google.maps.Marker({
+//                          map:map,
+//                          position: {
+//                               lat: point.val().lat,
+//                               lng: point.val().lng
+//                          }
+//                 })
+//               marker.setMap(map) // Set market on the map
+//              })
+//         })
+//
+//
+//
+// }
 
       function initMap() {
-        var myLatlng = new google.maps.LatLng (-28, 137);
+        var myLatlng = new google.maps.LatLng (38.80741,-77.045016);
 
         var myOptions = {
          zoom: 14,
@@ -195,6 +241,7 @@
 
         drawingManager.setMap(map);
 
+
         // google.maps.event.addListener(map, 'dblclick', function(event) {
         //   var latitude = event.latLng.lat();
         //   var longitude = event.latLng.lng();
@@ -209,16 +256,13 @@
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
               var polyLength = polygon.getPath().getLength();
+              // need to empty the arrary each time a polygon is created
               //   console.log(polyLength);
               for (var i = 0; i < polyLength; i++) {
                   var poly = polygon.getPath().getAt(i).toUrlValue(6);
                   polygonArray.push(poly);
-                  //// Uploads employee data to the database
-                  database.ref('userInfo/coordinates').push(polygonArray);
-                  //database.ref().push(polygonArray[polygonArray.length-1]);
-                  //// Uploads employee data to the database
-                  //database.ref().push(polygonArray);
               }
+              database.ref('userInfo/coordinates').push(polygonArray);
               console.log(polygonArray);
           });
 
@@ -248,7 +292,7 @@
           map.addListener('dblclick', function(event) {
             addMarker(event.latLng);
             markers.lat = event.latLng.lat();
-          markers.lng = event.latLng.lng();
+            markers.lng = event.latLng.lng();
           //addToFirebase(markers);
             console.log(locations);
           });
@@ -274,9 +318,12 @@
         // https://stackoverflow.com/questions/28596237/loading-a-geojson-object-directly-into-google-maps-v3
         //     map.data.addGeoJson();
         //
+        //
+
+
         // }
 
-      google.maps.event.addDomListener(window, 'load', initMap);
+      //google.maps.event.addDomListener(window, 'load', initMap);
 
 
     </script>
