@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+		<link rel="stylesheet" href="../assets/css/Final.css"/>
+		<script src="js/jquery-1.9.1.min.js"></script>
+		<script src="js/jquery.mobile-1.3.2.min.js"></script>
+ 		<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+ 		<script src="https://maps.googleapis.com/maps/api/js?libraries=weather,places,drawing,visualization,drawing&sensor=false"></script>
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<title>MPS GIS Capstone Project</title>
+		<meta name="description" content="">
+		<meta name="author" content="antoine">
+
+		<meta name="viewport" content="width=device-width; initial-scale=1.0">
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+		<style type="text/css">  /*inline styleing via CSS*/
+		/* Antoine Bartholomew, GEOG 650 */
+		</style>  <!--End the inline styling section of the code -->
+<body>
+
+<!--homeView Page 1 div-->
+    <div id="homeView" data-role="page" data-title="Welcome to GoPlay.Com" data-theme="a">
+        <div id="header1" data-position="fixed" data-role="header">
+            <h1> Welcome to GoPlay.Com Map the Park Area Near You </h1>
+        </div><!--end header1 div -->
+
+        <div data-role="content">
+            <img src="images/activepeople.jpg" alt="View Source Logo" style="max-width: 75%;"/>
+
+            <div data-role="controlgroup" style="max-width: 75%; margin: 40px auto;">
+                <a href="#findView" data-role="button" data-icon="search" data-theme="b"> Find the Park Areas Near You  </a>
+                <a href="#report" data-role="button" data-icon= "wvc_blog" data-theme="e"> DB Page Add Your Information </a>
+                <a href="#videos" data-role="button" data-icon= "wvc_video" data-theme="d"> Remove this Pages </a>
+            	<a href="#contact" data-role="button" data-icon= "alert" data-theme="e"> About the Developer A. Bartholomew  </a>
+            </div><!--end controlgroup (links) div -->
+        </div><!--end content div -->
+    </div> <!--end homeView  -->
+
+      <!--contact Page-->
+
+		<div id="contact" data-role="page" data-title="Contact the Developer">
+		<div data-role="header" data-position="fixed">
+			<h1> Contact A. Bartholomew </h1>
+			<a href="http://www.linkedin.com/pub/antoine-bartholomew/17/b73/ba5/" data-icon="star" data-iconpos="notext"> LinkedIn</a>
+			<a href="#homeView" data-icon="home" data-iconpos="notext"> Home</a>
+		</div>	<!-- end header -->
+
+		<div data-role="footer" data-position="fixed" id="footer1">
+        <div data-role="navbar">
+                <ul>
+                    <li><a href="#homeView" data-role="button" data-icon="home" > Home </a></li>
+                    <li><a href="#findView" data-role="button" data-icon="search" > Find </a></li>
+                    <li><a href="#report"  data-role="button" data-icon= "wvc_blog" > Report </a></li>
+                    <li><a href="#videos"  data-role="button" data-icon= "wvc_video"> Video </a> </li>
+
+
+                </ul>
+            </div><!--end navbar -->
+        </div><!--end footer -->
+        <div data-role="content">
+        	 <img src="images/photo1.png" alt="View Source Logo" style="width:25%; height:15%; margin:10 5 10 5; padding: 10px; border: 5px solid #000;"/>
+        	<h2>Application Developed By: </h2>
+
+            <b><p> Antoine A. Bartholomew </p> </b>
+            <b><p> <i> Master of Geospatial Information Sciences </i></p></b>
+            <b><P> University of Maryland College Park, Expected Graduation May 2015</P></b>
+            <b><p> Mobile Phone: 313-247-5233 </p></b>
+
+
+			GEOG 579B	       	Intro to Remote Sensing 			Summer II 2011 </br>
+			GEOG 506	        Quant Methods Geosciences			Winter 2012 </br>
+			GEOG 579A	        Into to GIS							Summer I 2012</br>
+			GEOG 653			Spatial Analysis					Fall 2012</br>
+			GEOG 656			Programing & Scripting for GIS		Winter 2012</br>
+			GEOG 657			Web Programming						Spring 2013</br>
+			GEOG 651			Spatial Statistics					Fall 2013</br>
+			GEOG 653			Mobile GIS							Fall 2013</br>
+
+
+        </div><!-- end content -->
+    </div> <!--End Contact Page-->
+
+    <!--mapView Page 2-->
+    <div id="mapView" data-role="page">
+        <div data-position="fixed" data-role="header">
+        	<a href="#resultsView"> Results</a>
+            <h1> Map View </h1>
+            <a href="#directionsView"> Driving Directions </a>
+
+        </div> <!--end header-->
+        <div>
+              <b>Mode of Travel Directions: </b>
+            <select id="mode" onchange="Route();">
+
+	              <option value="DRIVING">Driving</option>
+	              <option value="WALKING">Walking</option>
+	              <option value="BICYCLING">Bicycling</option>
+	              <option value="TRANSIT">Transit</option>
+            </select>
+
+ 			</div>
+    <div data-role="content" id="mapContent">
+        	<div id="mapDiv" style="width:auto; height:85%; margin:10 5 10 5; padding: 15px; border: 10px solid #000;"> </div>  <!-- this div holds the map -->
+        </div><!--end content-->
+    </div><!--end Page: mapView -->
+
+<!--findView Page 2: Find Nearby, this is the second page-->
+    <div id="findView" data-role="page">
+        <div id="header1" data-position="fixed" data-role="header">
+            <a href="#homeView" data-icon="home" data-iconpos="notext"> Home </a>
+            <h1> What's Nearby</h1>
+            <a href="#mapView"> Map View </a>  <!-- creates a button link to mapView -->
+        </div><!--end header1 -->
+        <div data-role="content">
+            <ul data-role="listview" data-inset="true">
+                <li id="gymItem"> <a href="#resultsView"> Gym Facilities </a></li>
+                <li id="parkItem"> <a href="#resultsView"> Public Parks Areas </a></li>
+                <li id="amusement_parkItem"> <a href="#resultsView"> Amusement Park Locations</a></li>
+                <li id="bowling_alleyItem"> <a href="#resultsView"> Bowling Alley Locations </a></li>
+                <li id="art_gallerylItem"> <a href="#resultsView"> Art Gallery Locations </a></li>
+                <li id="settingItem"> <a href="#settingsView"> Select a Search Distance in Meters </a></li>
+            </ul>
+
+            <h2> Current Location </h2>
+            <div id="loc"> </div>
+            <div id="acc"> </div>
+        </div><!--end content -->
+        <div data-role="footer" data-position="fixed" id="footer1">
+        <div data-role="navbar">
+                <ul>
+                    <li><a href="#homeView" data-role="button" data-icon="home" > Home </a></li>
+
+                    <li><a href="#report"  data-role="button" data-icon= "wvc_blog" > Report </a></li>
+                    <li><a href="#videos"  data-role="button" data-icon= "wvc_video"> Video </a> </li>
+
+                    <li><a href="#contact" data-role="button" data-icon= "alert"> Contact </a> </li>
+                </ul>
+            </div><!--end navbar -->
+        </div><!--end footer -->
+       </div> <!--end Page 2: Find Nearby -->
+
+<!--resultsView Page 3-->
+    <div id="resultsView" data-role="page" >
+      <div id="header1" data-position="fixed" data-role="header">
+
+        <a href="#findView"> Find </a>
+        <h1> Results </h1>
+      </div> <!--end header-->
+
+      <div data-role="content">
+        <ul id="searchResults" data-role="listview" data-insert="true">
+	    </ul>
+      </div> <!--end content -->
+    </div><!--end Page: ResultsView -->
+
+<!--directionsView Page 5-->
+    <div id="directionsView" data-role="page">
+        <div id="header1" data-position="fixed" data-role="header">
+            <a href="#mapView"> Map </a>
+
+            <a href="#homeView" data-icon="home" data-iconpos="notext"> Home</a>
+            <h1> Directions </h1>
+        </div>  <!--end header-->
+
+
+
+        <div data-role="content">
+            <div id="directions"> </div>
+        </div><!--end content-->
+    </div><!--end Page: directionsView -->
+
+
+<!--settingsView Page 6-->
+    <div id="settingsView" data-role="page">
+        <div data-role="header" data-position="fixed">
+            <a href="#findView"> Find </a>
+            <h1> Settings </h1>
+        </div><!--end header-->
+
+        <div data-role="content">
+            <ul data-role="listview" data-inset="true">
+               <li><a href="#distView">Search Distance <span id="distVal" class="ui-li-aside">3000 Meters</span></a></li>
+            </ul>
+        </div> <!--end content-->
+    </div><!--end Page 6: directionsView -->
+
+ <!--Page Distance Setting Page 7-->
+    <div id="distView" data-role="page">
+        <div data-role="header" data-position="fixed">
+            <a href="settingsView"> Settings </a>
+            <h1> Search Distance </h1>
+        </div><!--end header-->
+
+        <div data-role="content">
+            <ul data-role="listview" data-inset="true">
+				<li onclick="updateDist(1000)"><a href="#settingsView"> 1000 Meters </a></li>
+				<li onclick="updateDist(2500)"><a href="#settingsView"> 2500 Meters </a></li>
+				<li onclick="updateDist(5000)"><a href="#settingsView"> 5000 Meters </a></li>
+				<li onclick="updateDist(7500)"><a href="#settingsView"> 7500 Meters </a></li>
+				<li onclick="updateDist(10000)"><a href="#settingsView">10000 Meters </a></li>
+            </ul>
+        </div>
+    </div><!-- End Page Distance Setting Page 7-->
+
+<!-- Page: Video 8-->
+
+	<div id="videos" data-role="page" data-title="Wildlife Videos">
+
+		<div data-role="header" data-position="fixed">
+            <h1> Health Information </h1>
+             <a href="#homeView" data-icon="home" data-iconpos="notext"> Home </a>
+             <a href="#youtube" data-icon="wvc_video" data-iconpos="notext"> YouTube Videos </a>
+	        <div data-role="content">
+	            <!--<div class="ui-gird-a" id="videoList" > </div> -->
+	            	<div>
+	            		  Working out shouldn't feel like work, also don't ignore the importance of sleep and managing stress through getting a good night’s sleep.
+	            		  I can't tell you how many times I've felt stress and the minute I start to sweat, I instantly feel better.  To help manage stress, I recommend you get as much exercise as possible.
+	            		  There are several recommended exercise on the next page.  To view the next page please click the <b> <i> STAR BUTTON </i></b> in the top right corner that will link you to the next page.
+						  Multiple studies now show how important sleep is when it comes to our overall mental and physical health including our waist size. The high-stress poor-sleep cycle is one that has to be broken.
+						  I try to get at least seven hours most nights. I place a lot more emphasis on sleep than in the past.
+					</div>
+
+	            <!-- The jQuery Mobile framework provides a simple way to build CSS-based columns through a block style class convention called ui-grid
+	            	There are two preset configurations layouts — two-column (using the class of ui-grid-a), and three-column (using the class of ui-grid-b) -->
+
+	        </div><!--end content-->
+     	</div>
+
+     	<div data-role="footer" data-position="fixed" id="footer1">
+        <div data-role="navbar">
+                <ul>
+                    <li><a href="#homeView" data-role="button" data-icon="home" > Home </a></li>
+                    <li><a href="#findView" data-role="button" data-icon="search" > Find </a></li>
+                    <li><a href="#report"  data-role="button" data-icon= "wvc_blog" > Report </a></li>
+                    <li><a href="#contact" data-role="button" data-icon= "alert"> Contact </a> </li>
+                </ul>
+            </div><!--end navbar -->
+        </div><!--end footer -->
+     </div><!--end Video page-->
+
+<!-- Page 9: Video Player-->
+	<div id="videoPlayer" data-role="page" style="margin: 1em 0.1em 0.5em 0.1em; height: 2.5em, font-size: 1em; overflow: hidden; width: 95%; text-decoration: none; color: #777";>
+		<div data-role="header" data-position="fixed">
+			<a href="#videos" data-icon="home" data-iconpos="notext"> Videos</a>
+			<h1> Video Player</h1>
+		</div>	<!-- end header -->
+
+		<div data-role="content" id="myPlayer">
+
+		</div><!-- end content -->
+
+	</div><!-- End Page 9: Video Player -->
+
+	<!-- Page YouTube Player-->
+
+	 <div id="youtube" data-role="page" <!-- style="margin: 1em 0.1em 0.5em 0.1em; height: 2.5em, font-size: 1em; overflow: hidden; width: 95%; text-decoration: none; color: #777";--> >
+		<div data-role="header" data-position="fixed">
+			<a href="#youtube" data-icon="info" data-iconpos="notext"> Videos</a>
+			<a href="#homeView" data-icon="home" data-iconpos="notext"> Home </a>
+			<h1> My YouTube Video Player</h1>
+		</div>	<!-- end header -->
+
+		<div data-role="content" id="myPlayer">
+
+		</div><!-- end content -->
+
+		<div data-role="footer" data-position="fixed" id="footer1">
+        <div data-role="navbar">
+                <ul>
+                    <li><a href="#homeView" data-role="button" data-icon="home" > Home </a></li>
+                    <li><a href="#findView" data-role="button" data-icon="search" > Find </a></li>
+                    <li><a href="#report"  data-role="button" data-icon= "wvc_blog" > Report </a></li>
+                    <li><a href="#contact" data-role="button" data-icon= "alert"> Contact </a> </li>
+                </ul>
+            </div><!--end navbar -->
+        </div><!--end footer -->
+
+	</div><!-- End-->
+
+	<!-- Page 12: Report/Form Page-->
+	<div id="report" data-role="page">
+
+		<div data-position="fixed" data-role="header">
+			<a href="#homeView" data-icon="home" data-iconpos="notext"> Home </a>
+			<h1> User Database Information </h1>
+			<a href="#collisionView" id="btCollision" data-icon="info" data-iconpos="notext"> List </a>
+		</div>	<!-- end header -->
+
+		<div data-role="content" data-theme='b'>
+			<form method="post" id="insertForm">
+				<label for="Activity"> <b> What is your favorite activity: </b></label>
+					<select id="action" name="action">
+						<option value="Select An Activity" > Select Your Favorite Activity Type </option>
+						<option value="Gym"> Gym </option>
+						<option value="Park"> Park </option>
+						<option value="Musem"> Musem </option>
+						<option value="Amusment_Park"> Amusment_Park </option>
+						<option value="Bowling"> Bowling </option>
+						<option value="Art_Gallery"> Art_Gallery </option>
+						<option value="Other"> Other </option>
+					 </select>
+
+				 <label for="txtaction" class="ui-hidden-accessible"></label>
+				 <input type="text" id="txtaction" name="txtaction" value="" placeholder="Tell Us About Yourself!"/>
+
+				 <label for="txtaction_name1" class="ui-hidden-accessible"></label>
+				 <input type="text" id="txtaction_name1" name="txtaction_name1" value="" placeholder="First Name"/>
+
+				 <label for="txtaction_name2" class="ui-hidden-accessible"></label>
+				 <input type="text" id="txtaction_name2" name="txtaction_name2" value="" placeholder="Last Name"/>
+
+				<div data-role="fieldcontain" >
+				   <fieldset data-role="controlgroup" data-type="horizontal">
+		            	<legend>Gender:</legend>
+
+		    		    <label for="rbMale"> Male </label>
+					    <input type="radio" name="rbGender" id="rbMale" value="Male"/>
+
+		    		    <label for="rbFemale"> Female </label>
+					    <input type="radio" name="rbGender" id="rbFemale" value="Female" />
+
+				   </fieldset>
+			   </div>
+
+			   <div data-role="fieldcontain">
+				   <fieldset data-role="controlgroup" data-type="horizontal">
+		            	<legend>Age Group:</legend>
+
+		    		    <label for="rbAge1"> 15-35 Years </label>
+		        		<input type="checkbox" name="rbAge" id="rbAge1" value=""/>
+
+		        		<label for="rbAge2"> 36-56Years </label>
+					    <input type="checkbox" name="rbAge" id="rbAge2" value="" checked="checked"/>
+
+		    		    <label for="rbAge3"> 57 Years + </label>
+					    <input type="checkbox" name="rbAge" id="rbAge3" value="" />
+				   </fieldset>
+			   </div>
+
+			   <div data-role="fieldcontain">
+			   		<label for="rpData"> <b> Report Date </b></label>
+			   		<input type="date" name="rpDate" id="rpDate" placeholder="yyyy/mm/dd" />
+			   </div>
+
+			   <div data-role="fieldcontain">
+				   	<label for="lat"> <b> Latitude: </b>
+				   	<input type="number" name="lat" id="lat" placeholder="Enter the latitude" min="-90" max="90" step="0.000001" />
+				   	</label>
+			   </div>
+
+			   <div data-role="fieldcontain">
+				   	<label for="lng"> <b> Longitude: </b>
+				   	<input type="number" name="lng" id="lng" placeholder="Enter the longitude" min="-180" max="180" step="0.000001" />
+				   	</label>
+			   </div>
+
+			   <div data-role="fieldcontain">
+				   	<label for="address"> <b> Address: </b>
+				   	<input type="text" name="address" id="address" placeholder="Enter the Address" name="address"/>
+				   	</label>
+			   </div>
+
+			   <fieldset class="ui-grid-a">
+			   	<div class="ui-block-a"><a href="#homeView" id="cancel" data-role="button"> Cancel </a> </div>
+			   	</hr>
+			   	<div class="ui-block-b"> <button id="submit" type="submit"> Submit </button></div>
+			   </fieldset>
+
+			   <h3 id="message"> </h3>
+
+			</form><!--End of form-->
+		</div>
+		<div data-role="footer" data-position="fixed" id="footer1">
+        	<div data-role="navbar">
+                <ul>
+                    <li><a href="#homeView" data-role="button" data-icon="home" > Home </a></li>
+                    <li><a href="#findView" data-role="button" data-icon="search" > Find </a></li>
+
+                    <li><a href="#videos"  data-role="button" data-icon= "wvc_video"> Video </a> </li>
+
+                    <li><a href="#contact" data-role="button" data-icon= "alert"> Contact </a> </li>
+                </ul>
+            </div><!--end navbar -->
+        </div><!--end footer -->
+     </div>
+	 <!-- End Page 11: show Photo Page -->
+
+	 <!-- Page: list colllisions -->
+	 <div id="collisionView" data-role="page">
+		<div id="header1" data-position ="fixed" data-role="header">
+			<a href="#report" data-icon="wvc_blog" data-iconpos="notext"> Report </a>
+			<h1> Collisons List </h1>
+
+			<!-- If a user click the link button, it takes the user to the page displaying the list of collision data from the database (specifically ‘collisions’ table).-->
+		</div>	<!-- end header -->
+		<div data-role="content">
+			<ul id="list_action" data-role="listview" data-inset="true">
+				<h1>List of Actions</h1>
+			</ul>
+		</div>
+
+	</div> <!-- End Page Show Collision list -->
+
+</body>
+
+	<script>
+
+		google.maps.visualRefresh = true;
+
+                       $(document).on("mobileinit", function(){
+                       //change global setting using $.mobile object
+                       $.mobile.page.defaultPageTransition = "pop";
+                       $.mobile.page.prototype.options.headerTheme="b";
+                       $.mobile.page.prototype.options.footerTheme="d";
+                       $.mobile.pageLoadErrorMessage = "Error on Page Load";
+                    });
+        </script>
+
+        <script>
+
+		// NOTE: fixed zoom levels dont work well in google chrome, they work better in FireFox
+
+ 		//GLOBAL VARIABLES; defined outside of functions
+
+        var currentLocation;
+        var geocoder;
+        var searchResults;
+        var oceanBeach = new google.maps.LatLng(37.7683909618184, -122.51089453697205);
+
+        var map;
+        var directionsDisplay;
+        var directionsService;
+        //https://developers.google.com/maps/documentation/javascript/examples/elevation-simple
+		var elevator = new google.maps.ElevationService();
+		var locations = [];
+
+		var heatmapData = [];
+
+
+var styles = [//www.gsd.harvard.edu/gis/manual/style/ColorConventions.pdf
+                        //http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CC8QFjAA&url=http%3A%2F%2Fwww.gsd.harvard.edu%2Fgis%2Fmanual%2Fstyle%2FColorConventions.pdf&ei=4n8TUuCCN-GfyQHBqIGICQ&usg=AFQjCNFoVQ7tMvJI-YJxN771VB0Vf-UCMw&sig2=yHzaBAO81W-oI3zJ2SoUBA&bvm=bv.50952593,d.aWc
+    {
+      featureType: 'road.highway', // STYLES THE HIGH WAY MAJOR ROADS
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#080000' },// indicates the basic color  #000000
+        { visibility: 'simplified' },//'simplified' --> roads, for example, are simplified into thinner lines without outlines
+        { saturation: 60 },  //-100 and 100) indicates the percentage change in intensity of the basic color to apply to the element.
+        { lightness: -30 } //
+    //  { gamma: 0.7 } a floating point value between 0.01 and 10.0, where 1.0 applies no correction...Gammas are typically used to modify the contrast of multiple elements
+      ]
+      },{
+      featureType: 'road.highway.controlled_access', //Tomato  red
+      elementType: 'geometry',
+      stylers: [
+        { hue: '' }, //#FF6347  #000000
+        { visibility: 'simplified' },
+        //{ lightness: 40 },
+        //{ saturation: 99 }
+      ]
+    },{
+     featureType: 'road.arterial', //STYLES THE STREETS
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#000033' }, // Black
+        { lightness: -85 },
+        { visibility: 'simplified' },
+        { saturation: 25 }
+      ]
+    },{
+      featureType: 'road.local', //Gold for local roads
+      elementType: 'geometry',
+      stylers: [
+        { hue: '' },//#FFD700
+        { visibility: 'on' },
+        { saturation: 50 },
+        //{ gamma: 0.7 },
+        { visibility: 'simplified' } // on or 'simplified'
+      ]
+      },{
+      //featureType: 'road', // this makes all the roads one color
+      //elementType: 'all',
+      //stylers: [
+      //  { gamma: 0.7 } a floating point value between 0.01 and 10.0, where 1.0 applies no correction...Gammas are typically used to modify the contrast of multiple elements
+      //]
+        },{
+        featureType: 'water',
+        elementType: 'geometry',
+        stylers: [
+        { hue: '#00d4ff' }, // sets all water areas to RGB (Decimal)200, 255, 255 Blue #0000FF
+        { visibility: 'on' },
+        { saturation: 60 },
+        { lightness: -20 },
+        { gamma: 1.51 },
+        //{ visibility: 'simplified' }
+        ]
+      },{
+      featureType: 'transit.line', // Dark Brown
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#808080' }, //#B22222
+        { visibility: 'on' },
+        { saturation: 75 },
+        { lightness: -75 }
+      ]
+    },{
+      featureType: 'transit.station.airport',  //Light Purple/Pink
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#FF00FF' }, //#BEBEBE
+        { visibility: 'on' },
+        { saturation: 100 },
+        //{ lightness: 40 }
+      ]
+      },{
+      featureType: 'transit.station', // LightGoldenRodYellow
+      elementType: 'geometry',
+      stylers: [
+        { hue: '' }, //#FAFAD2
+        { visibility: 'on' },
+        //{ saturation: 40 },
+        //{ lightness: 40 }
+      ]
+      },{
+      featureType: 'transit.station.rail', // Ivory
+      elementType: 'geometry',
+      stylers: [
+        { hue: '' }, //#FFFFF0
+        { visibility: 'on' },
+        //{ saturation: 40 },
+        //{ lightness: 40 }
+      ]
+      },{
+      featureType: 'transit.station.bus',  // HoneyDew - white
+      elementType: 'geometry',
+      stylers: [
+        { hue: '' },//#F0FFF0
+        { visibility: 'on' },
+        //{ saturation: 40 },
+        //{ lightness: 40 }
+      ]
+    },{
+      featureType: 'poi.sports_complex', // Gray
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#7FFF00' },  //#7FFF00
+        { visibility: 'on' },
+        { saturation: 85 },
+        { lightness: -15 }
+      ]
+    },{
+      featureType: 'poi.place_of_worship', // Purple
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#c300ff' },  //#FF0000
+        { saturation: 25 },
+        { visibility: 'on' },
+        { lightness: -50 }
+        //{ gamma: 0.90 }
+      ]
+    },{
+      featureType: 'poi.medical', // Full Yellow
+      elementType: 'geometry',
+      stylers: [
+        { hue: '#FFFF00' },
+        { visibility: 'on' },
+        { saturation: 100 },
+        { lightness: -22 }
+      ]
+  }, {
+    featureType: 'poi.park',  // Green
+    elementType: 'geometry',
+    stylers: [
+      { hue: '#00FF00' },
+      { visibility: 'on' },
+      //{ gamma: 1.4 },
+      { saturation: 65 },
+      { lightness: -10 }
+    ]
+  }, {
+    featureType: 'poi.school',  // school buildings to Blue
+    elementType: 'geometry',
+    stylers: [
+      { hue: '#0000FF' },
+      { visibility: 'on' },
+      { lightness: -25 },
+      { saturation: 50 }
+    ]
+  }, {
+    featureType: 'poi.government',  // light orange
+    elementType: 'geometry', //all or geometry
+    stylers: [
+      { hue: '#ff8800' }, //#85ADAD #C0C0C0
+      { visibility: 'on' },
+      { lightness: -10 },
+      { saturation: 85 }
+    ]
+    }, {
+    featureType: 'poi.attraction',  // National Mall Area, Baby Blue
+    elementType: 'geometry',
+    stylers: [
+      { hue: '#778899' }, //  Baby Blue
+      { visibility: 'on' },
+      { lightness: 15 },
+      { saturation: 75 }
+    ]
+    }, {
+    featureType: 'poi.business',  // sets all business to dark red
+    elementType: 'geometry',
+    stylers: [
+      { hue: '#ff005d' }, //#4B0082
+      { visibility: 'simplified' },
+      { lightness: -65 },
+      { saturation: 65 }
+    ]
+    //}, {
+    //featureType: 'transit.station.bus',  // sets all bus stops to deep pink
+    //elementType: 'all',
+    //stylers: [
+    //  { hue: '#FF1493' },
+    //  { visibility: 'on' },
+    //  { lightness: -15 },
+    //  { saturation: 99 }
+    //]
+    }, {
+    featureType: 'administrative.locality',  // sets all administrative.locality to
+    elementType: 'geometry',
+    stylers: [
+      { hue: '#FFFFFF' }, //#0000FF
+      { visibility: 'on' },
+      { lightness: -30 },
+      { saturation: 75 }
+    ]
+   }, {
+    featureType: 'landscape.man_made',  // sets all man made landscape areas to YELLOW (ALL DEVELOPED AREAS)
+    elementType: 'geometry', //all or geometry
+    stylers: [
+      { hue: '#FFFF00' },  //#8B4513
+      { visibility: 'simplified' },
+      { lightness: 15 },
+      { saturation: 75 }
+    ]
+   // }, {
+   // featureType: 'landscape.natural',  // sets all natural landscape areas to spring green
+   // elementType: 'geometry', //all or geometry
+   // stylers: [
+   //   { hue: '#00FF7F' },
+   //   { visibility: 'on' },
+   //   { lightness: -15 },
+   //   { saturation: 99 }
+   // ]
+   // }, {
+   // featureType: 'landscape.natural.landcover',  // sets all natural landcover areas to TEAL green
+   // elementType: 'geometry', //all or geometry
+   // stylers: [
+   //   { hue: '#008080' },
+   //   { visibility: 'on' },
+   //   { lightness: -15 },
+   //   { saturation: 99 }
+   // ]
+   // }, {
+   // featureType: 'landscape.natural.terrain',  // sets all natural landcover terrain areas to YellowGreen
+   // elementType: 'geometry', //all or geometry
+   // stylers: [
+   //   { hue: '#9ACD32' },
+   //   { visibility: 'on' },
+   //   { lightness: -15 },
+   //   { saturation: 99 }
+   // ]
+    }
+  ];
+
+
+        var trafficLayer = new google.maps.TrafficLayer();
+
+        var weatherLayer = new google.maps.weather.WeatherLayer({
+		temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
+		 });
+
+		 var drawingManager = new google.maps.drawing.DrawingManager({
+	    //drawingMode: google.maps.drawing.OverlayType.MARKER,    //whats the diffrence in these two lines of code, works with or with out code
+	    //drawingMode: google.maps.drawing.OverlayType.POLYGON,  //whats the diffrence in these two lines of code, works with or with out code
+	    drawingControl: true,
+	    drawingControlOptions: {
+	      position: google.maps.ControlPosition.TOP_CENTER,
+	      drawingModes: [
+        google.maps.drawing.OverlayType.MARKER,
+        google.maps.drawing.OverlayType.CIRCLE,
+        google.maps.drawing.OverlayType.POLYGON,
+        google.maps.drawing.OverlayType.POLYLINE,
+        google.maps.drawing.OverlayType.RECTANGLE
+      ]
+    },
+    polygonOptions: {
+     fillColor: '#00FF00', //green
+      fillOpacity: .25,
+      strokeWeight: 3,
+      clickable: false,
+      draggable: true,
+      editable: true,
+      geodesic: true, //When true, edges of the polygon are interpreted as geodesic and will follow the curvature of the Earth. When false, edges of the polygon are rendered as straight lines in screen space.
+      zIndex: 1
+    },
+    polylineOptions: {
+     fillColor: '#FF0000', //red
+      fillOpacity: .25,
+      strokeWeight: 3,
+      clickable: false,
+      draggable: true,
+      editable: true,
+      geodesic: true, //When true, edges of the polygon are interpreted as geodesic and will follow the curvature of the Earth. When false, edges of the polygon are rendered as straight lines in screen space.
+      zIndex: 1
+    },
+    rectangleOptions: {
+     fillColor: '#0000FF',  //blue
+      fillOpacity: .25,
+      strokeWeight: 3,
+      clickable: false,
+      draggable: true,
+      editable: true,
+      geodesic: true, //When true, edges of the polygon are interpreted as geodesic and will follow the curvature of the Earth. When false, edges of the polygon are rendered as straight lines in screen space.
+      zIndex: 1
+    },
+    circleOptions: {
+      fillColor: '#ffff00', //yellow
+      fillOpacity: .25,
+      strokeWeight: 3,
+      clickable: false,
+      draggable: true,
+      editable: true,
+      geodesic: true, //When true, edges of the polygon are interpreted as geodesic and will follow the curvature of the Earth. When false, edges of the polygon are rendered as straight lines in screen space.
+      zIndex: 1
+    }
+  });
+
+
+
+
+  		var cloudLayer = new google.maps.weather.CloudLayer();
+
+        function init() {
+			//WHY IS THIS LINE OF CODE IN THE PROGRAM TWO TIMES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			//geocoder = new google.maps.Geocoder();  //creates geocoder object upon page initalization
+
+			if(navigator.geolocation) {
+				//uses the Geolocation API to get the current location and track it as you move
+				navigator.geolocation.watchPosition(showLocation, locationError);
+
+			}else {
+				alert("Geolocation not supported on this device");
+				return;
+			}
+			//https://developers.google.com/places/documentation/supported_types
+
+	         $("#gymItem").on("click" , function() {
+	            queryPlaces('Gym'); //passes the argument into the queryPlaces function to search for ....
+	        });
+
+	         $("#parkItem").on("click" , function() {
+	            queryPlaces('Park');
+	        });
+
+	         $("#amusement_parkItem").on("click" , function() {
+	            queryPlaces('Amusement_Park');
+	        });
+
+	          $("#bowling_alleyItem").on("click" , function() {
+	            queryPlaces('bowling_alley');
+	        });
+
+	         $("#art_gallerylItem").on("click" , function() {
+	            queryPlaces('art_gallery');
+	        });
+	        $("#museumItem").on("click" , function() {
+	            queryPlaces('museum');
+	        });
+
+	        {
+			document.addEventListener("deviceready", onDeviceReady, false);
+			initMap();
+		    }
+
+
+	       } // end of init function
+
+        function showLocation(location) {
+        	geocoder = new google.maps.Geocoder();
+          	currentLocation = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);  // gets current position for latLng on the Google Map
+        	//Esri product uses long, lat while, Google uses lat, long...takes teh Y coord first then the X coord
+
+        	$('#lat').attr("value", currentLocation.lat()); // Set the ‘value’ attribute of the input text (“#lng”) to the longitude of the current point using attr().
+        	$('#lng').attr("value", currentLocation.lng()); // function successfully get an address for the current location. Set the ‘value’ attribute of the input text (“#address”) to the current address using attr().
+
+        	geocoder.geocode({'location': currentLocation}, function(results, status) {
+        		// the results are in the form of an array of results, later we want to access the elemnts of the results
+        		if (status == google.maps.GeocoderStatus.OK) {
+        			//calls the geocoder to geocode...says if its there, do something
+					if (results[0]) {
+
+						var address = results[0].formatted_address;  //address is a local variable, bc it is defined within this function
+
+						$('#address').attr("value", results[0].formatted_address); //lab 6:  function successfully get an address for the current location. Set the ‘value’ attribute of the input text (“#address”) to the current address using attr().
+						$('#loc').html(results[0].formatted_address);
+						// index [0] access to the first element ...the element is displayed in the location div
+					var info = "Latitude : "+location.coords.latitude+ " Logitude : " + location.coords.longitude + "<br/>";  // info is a local variable, bc it is defined within this function
+				    info += "Location accurate within" + location.coords.accuracy + "meters <br/> Last Updated: " + new Date(location.timestamp).toLocaleString();
+
+            		$('#acc').html(info);
+
+            		} else {
+            			alert('No Results Found');
+            		} //end of if statment
+
+            		}else {
+            			$('#loc').html('Geocoder failed due to ' + status);
+            		} // end of if statment
+            		}); //end of geocode()
+
+            		if (!map) initMap(); // calls the initMap function within the showLocation...says if there is no map, intilize the Map
+            		}//end of showLocation function
+
+    		function initMap(x,y) {
+				//creating the instance of these events, directions service and directions renderer
+				directionsService = new google.maps.DirectionsService();
+				directionsDisplay = new google.maps.DirectionsRenderer();
+
+				// Create a new StyledMapType object, passing it the array of styles,
+			    // as well as the name to be displayed on the map type control.
+			    var styledMap = new google.maps.StyledMapType(styles,
+			    {name: "Styled Map"}); //local variable
+
+				// creating the map object, with map options
+				var mapOptions = {
+
+					  zoom:15,
+					  minZoom: 2,// set the min zoom not to go out too far
+					  maxZoom: 20, // 20 is the highest max zoom level in google maps
+					  //panControl: true,
+					  panControlOptions: {
+					  position: google.maps.ControlPosition.TOP_LEFT}, // changes the position of the control slider
+					  zoomControlOptions: {
+					  style: google.maps.ZoomControlStyle.LARGE,
+					  position: google.maps.ControlPosition.LEFT_TOP},// changes the position of the control slider
+					  scaleControl: true,
+					  //draggable: false,
+					  mapTypeControlOptions: {
+					  mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.SATELLITE, 'map_style'],
+					  //mapTypeIds: [google.maps.MapTypeId.ROADMAP,google.maps.MapTypeId.HYBRID,google.maps.MapTypeId.SATELLITE,'usroadatlas'],// add OSM All Data and Buildings layers later.
+						}
+  				};
+
+					  map = new google.maps.Map(document.getElementById('mapDiv'),mapOptions);// KEY LINE IN CODE!!!!!!!!!!!!!!!!!!!!!
+
+					  //Associate the styled map with the MapTypeId and set it to display.
+					  map.mapTypes.set('map_style', styledMap);
+					  map.setMapTypeId('map_style');
+
+
+					heatmap = new google.maps.visualization.HeatmapLayer({
+					data: heatmapData  //data is from the arry of data points
+					 });
+
+					  directionsDisplay.setMap(map);
+
+					    trafficLayer.setMap(null);
+  						google.maps.event.addListener(map, "zoom_changed", function() {
+   						 if (map.getZoom() <= 14 && map.getZoom() >= 12) trafficLayer.setMap(map);
+					    else trafficLayer.setMap(null);
+					    });
+
+					    //Weather layer map set
+ 						 weatherLayer.setMap(null);// setting this to null, so the weather does not show on load, only a specified zoom levels
+						  google.maps.event.addListener(map, "zoom_changed", function() {
+						    if (map.getZoom() <= 6 && map.getZoom() >= 5 )  weatherLayer.setMap(map);
+						    else  weatherLayer.setMap(null);
+						    });
+
+						  cloudLayer.setMap(null);
+						  google.maps.event.addListener(map, "zoom_changed", function() {
+						    if (map.getZoom() <= 5 && map.getZoom() >= 3 )  cloudLayer.setMap(map);
+						    else  cloudLayer.setMap(null);
+						    });
+
+						  drawingManager.setMap(null);
+					   google.maps.event.addListener(map, "zoom_changed", function() {
+					    if (map.getZoom() <= 2 && map.getZoom() >= 20) drawingManager.setMap(map);
+					    else drawingManager.setMap(map);
+					    });
+					//var marker = new google.maps.Marker({position:currentLocation,map:map,title: "This is your current Location"});
+				}  //end function initMap
+
+
+            function locationError(error) {
+                switch (error.code) {
+                    case error.PREMISSION_DENIED:
+                        alert("Geolaction access denied or disabled. To enable geolocation on your iPhone, go to Settings > General > Location Services ");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert(" Current location not available");
+                        break;
+                    case error.TIMEOUT:
+                        alert("TimeOut");
+                        break;
+                    default:
+                        alert("Unknown Error");
+                        break;
+                }
+            }//end Function
+
+            function queryPlaces(queryVal) {
+                var dist = $("#distVal").text().split(" ");
+
+                // local variables, defined within the query palces function
+                //places details are editable  https://developers.google.com/places/documentation/details
+                var service = new google.maps.places.PlacesService(map);
+                var request = {
+                   	location: currentLocation,
+                	radius: dist[0],
+                	keyword: queryVal,
+                	rankBy: google.maps.places.DISTANCE
+                	//opennow true
+                };
+
+                service.nearbySearch(request, buildLocations);  //service.getDetails
+            }//end of queryPlaces
+
+            function calculateRoute(index){
+
+			 // local variables, defined within the function
+			var faciLocation = searchResults[index].geometry.location;
+			var faciName = searchResults[index].name;
+
+			//var location = results[0].geometry.location;
+
+			}//end Function
+
+			function locationDetails(index) {
+				mapResults(searchResults[index].geometry.location, searchResults[index].name);
+			}//end Function
+
+			function onDeviceReady() {
+
+			alert("devide ready");
+
+		    }
+				function mapResults (faciLocation, faciName) {
+
+				var selectedMode = document.getElementById('mode').value;
+
+				var request = {
+					origin: currentLocation,
+					destination: faciLocation, //the facility choosen
+					//travelMode: google.maps.TravelMode[selectedMode]
+					travelMode: google.maps.DirectionsTravelMode.DRIVING
+
+				};
+				directionsService.route(request, function(response, status) {
+			    //console.log("find error2");
+			    if (status == google.maps.DirectionsStatus.OK) {
+			      //console.log("find error3");
+			      directionsDisplay.setDirections(response);
+			      $("#directions").children().remove();  // this removes all page elements except for the directions view
+			      directionsDisplay.setPanel(document.getElementById('directions'));
+			    }
+			  });
+
+			  var bounds = new google.maps.LatLngBounds();
+			  bounds.extend(currentLocation);
+			  bounds.extend(faciLocation);
+			  map.fitBounds(bounds);
+			}//end Function
+
+			//function AltmapResults (faciLocation, faciName) {
+
+// https://developers.google.com/maps/documentation/javascript/examples/directions-travel-modes
+function Route(faciLocation){
+	//index =
+	//faciName = searchResults[index].name;
+   //console.log("find error");  //http://stackoverflow.com/questions/164397/javascript-how-do-i-print-a-message-to-the-error-console
+  var selectedMode = document.getElementById('mode').value;
+  var request = {
+     origin: currentLocation,
+     destination: faciLocation,
+
+      travelMode: google.maps.TravelMode[selectedMode]
+  };
+ directionsService.route(request, function(response, status) {
+  //console.log("find error2");
+   if ( status == google.maps.DirectionsStatus.OK) {
+      //console.log("find error3");
+      directionsDisplay.setDirections(response);
+    }
+  });
+}
+
+function listVideos(data){
+		//console.log(data);
+		// local variables, defined within the query palces function
+	var output=''; //holds the html text representing video information in a grid layout
+	for (var i=0; i<data.feed.entry.length; i++) {
+
+		var title = data.feed.entry[i].title.$t;
+		var thumbnail = data.feed.entry[i].media$group.media$thumbnail[0].url;
+		var description = data.feed.entry[i].media$group.media$description.$t;
+		var id = data.feed.entry[i].id.$t.substring(27);
+
+		var blockType = ((i % 2 )=== 1) ? 'b': 'a'; // using a MODULUS operator (%) to get the remainder of the division, then use a conditional (tertiary) operator (? :)
+
+		output += '<div class="ui-block-' + blockType + '">';
+
+		output += '<a href="#videoPlayer" data-transition="fade" onclick="playVideo(\'' + id + '\',\'' + title + '\', \'' + escape(description) + '\')">';
+
+		output += '<h3>' + title + '</h3>';
+		output += '<img src="' + thumbnail + '" alt="' + title + '"/>';
+		output += "</a>";
+		output += "</div>";
+	}
+	$('#videoList').html(output);
+} //End listVideos Function
+
+function playVideo (id, title, description){
+  var output ='<iframe src="http://www.youtube.com/embed/'+ id + '?autoplay=1" frameborder="0" ></iframe>';
+
+  output += '<h3>' + title + '</h3>';
+  output += '<p>' + unescape(description) + '</p>';
+
+  $('#myPlayer').html(output);
+}// end function
+
+
+
+            function showPhoto (link, title) {
+            	var output = '<a href="#photos" data-transition="fade">';
+
+            	output+= '<img src="' + link + '_b.jpg" alt="' + title + '" />';
+            	output+= '</a>';
+
+            	$('#myPhoto').html(output);
+            }//end show Photo function
+
+            function buildLocations(results, status){
+
+            	console.log(results); //used to de-bug
+
+            	searchResults = results;
+
+               $("#searchResults li").remove();
+
+               if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+               		if (results.length ==0) {
+               			 var noResults = $("<li>").html("No results found within search radius. Use the settings option to increase the search distance.");
+               			 $("#searchResults").append(noResults);
+               		return;
+               }//end if statment
+
+                    for (var i=0; i<results.length; i++) {
+
+                        var content;
+
+                        if (results[i].website) {
+                            content = "<a target='_blank' href= '" + results[i].website + "'> <b>" + results[i].name + " </b></a>";
+                } else {
+                    content = "<a> <b>" + results[i].name + " </b></br/>";
+                }
+
+                content = content + results[i].vicinity + "</br>";
+
+            if (!isNaN(results[i].rating)) {
+                content = content + "Average Rating: " + results[i].rating + "<br/></a>";
+            }
+            else {
+                content = content + "Average Rating: No Reviews <br/> </a>";
+            }
+            //content = content + "<a href='#mapView' onclick='Route("+ i +")' > Route </a>";
+            content = content + "<a href='#mapView' onclick='locationDetails("+ i +")' > Route </a>";  // this should take me to the map display @ 34 mins
+            //alert (content)
+
+            var resultItem = $("<li>").html(content);
+            $("#searchResults").append(resultItem);
+            } //end of FOR statment
+
+            $ ("#searchResults").listview("refresh");
+            }// end of for statment
+            else {
+            	alert("google place services" + google.maps.places.PlacesServiceStatus);
+            }
+
+	          }//end Function
+
+			function updateDist(value) {
+				$("#distVal").html("" +value+ "meters");
+			}//end Function
+
+			// used to make make compatible with mobile device screens, https://developers.google.com/maps/documentation/javascript/basics
+			  function detectBrowser() {
+			  var useragent = navigator.userAgent;
+			  var mapdiv = document.getElementById("#mapDiv");
+
+			  if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1 ) {
+			mapdiv.style.width = '100%';
+			mapdiv.style.height = '100%';
+			  } else {
+			    mapdiv.style.width = '600px';
+			mapdiv.style.height = '800px';
+			  }
+			}//end Function
+
+         function onSuccess(data, status){
+				//two arguments, data sent to web server and reult status
+				//$("#message").fadeIn(2000);
+
+				$("#message").css("background-color", "#00ff00");
+				$("#message").html(data);
+				//$("#message").fadeoOut(5000);
+			}
+
+
+
+			//need to change this function
+			function processCollisionList(data, status) {
+				$("#list_action").html(data);
+				$("#list_action").listview("refresh");
+			}
+
+		//window.onload
+           $(document).on('pageinit', init); /*Binds 'pageinit' event of documentto an event handler functionname init()*/
+
+		   // I will need to change this code here....
+		    $(document).on("pageinit", "#report", function () {
+
+		   	 $("#btCollision").on("click", function (e){
+
+		   		$.ajax({
+				url: "list_action.php",
+				cache: false,
+				success: processAction
+			});
+		   	});
+
+			 $("#submit").on("click", function (e) {
+			  var formData = $("#insertForm").serialize();
+
+			 	$.ajax({
+			 	type: "POST",
+			 	url: "insert_action.php",
+			 	cache: false,
+			 	data: formData,
+			 	success: onSuccess,
+			 });
+
+			 e.preventDefault();
+		  });
+		 });
+
+// https://developers.google.com/youtube/js_api_reference?csw=1
+
+		   $(document).on("pageinit", "#videos", function () {
+			 $.ajax({
+
+			 	//url:"http://gdata.youtube.com/feeds/api/users/myutube310/uploads?",
+			 	//data: "alt=json-in-script&max-results=10&callback=listVideos&v=2"
+			 	url: "https://gdata.youtube.com/feeds/api/videos",
+			 	data: "alt=json&q=wildlife+vehile+collision&max-results-12&v=2",
+			 	dataType: "jsonp",
+			 	success: listVideos
+
+			 	//"http://gdata.youtube.com/feeds/api/users/myutube310/uploads?",
+			 	//alt=json-in-script&max-results=10&callback=listVideos&v=2"
+			 });
+		   });
+
+
+
+		   $(function YouTube() {
+var htmlString = "<ul>";
+//http://forrst.com/posts/Display_YouTube_Videos_Using_JSON_and_jQuery-7uQ
+// http://gdata.youtube.com/feeds/users/myutube310/uploads?alt=json-in-script&max-results=10&callback=?&max-results=4
+//          "http://gdata.youtube.com/feeds/api/users/myutube310/uploads?alt=json-in-script&max-results=10&callback=listVideos&v=2"
+// THIS WORKS BUT NO IMAGES SHOW http://gdata.youtube.com/feeds/api/users/myutube310/uploads?alt=json
+$.getJSON('http://gdata.youtube.com/feeds/users/myutube310/uploads?alt=json-in-script&callback=?&max-results=4', function(data) {
+
+$.each(data.feed.entry, function(i, item) {
+
+var title = item['title']['$t'];
+
+var video = item['id']['$t'];
+
+video_link = video.replace('http://gdata.youtube.com/feeds/videos/','http://www.youtube.com/watch?v=');
+video_object = video.replace('http://gdata.youtube.com/feeds/videos/','http://www.youtube.com/v/');
+htmlString +='<li><object width="300" height="300"><param name="movie" value="' + video_object + '"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="' + video_object + '" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="350 height="300"><noembed>Browser does not support video</noembed></embed></object><p>' + title + '</p></li>';
+});
+$('#youtube').html(htmlString + "</ul>");
+});
+});
+
+
+    </script>
+
+	</head>
+
+
+</html>

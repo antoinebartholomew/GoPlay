@@ -1,0 +1,27 @@
+#content .myImage{
+    float: left;
+    margin: 0 30px 18px 0;  
+}
+#content h1 {
+    font-size: xx-large;
+    font: 34px georgia, serif; letter-spacing: 1px;
+    
+}
+#content h3{
+    font: 26px georgia, serif; letter-spacing: 2px;
+    margin: 0 0 20px 0;
+}
+
+#content table{
+    font: 15px georgia, serif; letter-spacing: 15 px; 
+}
+
+#content p{
+    font: 18px arial black, sans serif; letter-spacing: 2 px;
+}
+#content .Home{
+    font: 18px arial black, sans serif; font-weight: bold; letter-spacing: 15 px;
+}
+
+
+    

@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Drawing tools</title>
+    <title>Go Play! </title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
     <!-- Firebase Reference -->
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
     <link href='assets/css/style.css' rel='stylesheet' type='text/css'>
 
 
     <style>
-
     </style>
+
+
   </head>
       <body >
             <div class="container">
@@ -25,16 +28,44 @@
 
                     <div class="col-md-4">
 
-                        <h1>Google maps & Bootstrap tutorial from <a href="http://bootstrapious.com">Bootstrapious.com</a></h1>
-
-                        <p class="lead">This is a demo for our tutorial showing you how to add a custom styled Google maps into a Bootstrap page.</p>
-
-                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
-
-                        <input type="text" value="" onfocus= "this.value = '';" placeholder= "Find Loacation" id= "search_address"  size="15">
-                        <button onclick="search();">Search</button>
-                        <input id="save_raw"     value="save raw(IO.IN(shapes,false))"        type="button" />
-                        <input id="data"         value=""                style="width:100%" readonly/>
+                        <h1>Welcom to GoPlay Powered by Google Maps API <a href="">GoPlay.com</a></h1>
+                       <div id="info">
+                         <button class="btn btn-success" type="button" id="firebasePolygons" onclick="firebasePolygons()">Polygon </button>
+                        <button class="btn btn-success" type="button" id="firebaseMarkers" onclick="firebaseMarkers()">Markers </button>
+                      </div>
+                       <form>
+                         <div class="form-group">
+                         <label for="name">Name</label>
+                         <input type="text" class="form-control" id="name" required placeholder="Enter name">
+                       </div>
+                       <div class="form-group">
+                         <label for="email">Email</label>
+                         <input type="email" class="form-control" id="email" required placeholder="Enter Email">
+                       </div>
+                       <h3>coordinates</h3>
+                       <div class="form-group">
+                         <label for="city">City</label>
+                         <input type="text" class="form-control" id="city" placeholder="Enter City">
+                       </div>
+                       <div class="form-group">
+                         <label for="email">State</label>
+                         <input type="text" class="form-control" id="state" placeholder="Enter State">
+                       </div>
+                       <div class="form-group">
+                         <label for="zip">Zip</label>
+                         <input type="text" class="form-control" id="zip" placeholder="Enter Zip Code">
+                       </div>
+                       <button type="submit" class="btn btn-primary addValue">Submit</button>
+                         <div class="form-group">
+                           <label for="train-name ">Train Name</label>
+                           <input class="form-control" id="train-name" type="text">
+                         </div>
+                         <div class="form-group">
+                           <label for="Destination">Destination</label>
+                           <input class="form-control" id="Destination" type="text">
+                         </div>
+                         <button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
+                       </form>
 
                     </div>
 
@@ -47,157 +78,13 @@
 
     </body>
 
-
-    <script>
-
-
-    var map;
-    var coordinates = [];
-    var all_shapes = [];
-    var selectedShape;
-    var database = firebase.database();
-    /** Data object to be written to Firebase.  */
-      var data = {
-        sender: null,
-        timestamp: null,
-        lat: null,
-        lng: null
-      };
+  
+    <!-- Link Javascript File -->
+     <script type="text/javascript" src="assets/javascript/app.js"></script>
+     <script type="text/javascript" src="assets/javascript/clustermarker.js"></script>
 
 
-
-    function draw_shape()
-    {
-        for(var i = 0; i < all_shapes.length; i++)
-        {
-            all_shapes[i].setMap(null);
-        }
-
-        for(var i = 0; i < all_shapes.length; i++)
-        {
-            all_shapes[i].setMap(map);
-        }
-    }
+     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I&libraries=geometry,drawing&callback=initMap"></script>
 
 
-
-    function clearSelection()
-    {
-        if(selectedShape)
-        {
-            selectedShape.setEditable(false);
-            selectedShape = null;
-        }
-    }
-
-    function setSelection(shape)
-    {
-        clearSelection();
-        selectedShape = shape;
-        shape.setEditable(true);
-    }
-
-    function deleteSelectedShape()
-    {
-        if (selectedShape)
-        {
-            selectedShape.setMap(null);
-        }
-    }
-
-    function save_coordinates_to_array(newShapeArg)
-    {
-        if(newShapeArg.type == google.maps.drawing.OverlayType.POLYGON)
-        {
-            var polygonBounds = newShapeArg.getPath();
-
-            for(var i = 0 ; i < polygonBounds.length ; i++)
-            {
-                coordinates.push(polygonBounds.getAt(i).lat(), polygonBounds.getAt(i).lng());
-            }
-        }
-        else
-        {
-            //alert("Not polygon");/////////////
-        }
-    }
-
-    function markerCoords(markerobject){
-    google.maps.event.addListener(markerobject, 'dragend', function(evt){
-        infoWindow.setOptions({
-            content: '<p>Marker dropped: Current Lat: ' + evt.latLng.lat().toFixed(3) + ' Current Lng: ' + evt.latLng.lng().toFixed(3) + '</p>'
-        });
-        infoWindow.open(map, markerobject);
-    });
-
-    google.maps.event.addListener(markerobject, 'drag', function(evt){
-        console.log("marker is being dragged");
-    });
-}
-
-
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 8
-        });
-
-        var drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: google.maps.drawing.OverlayType.MARKER,
-          drawingControl: true,
-          drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: [
-              google.maps.drawing.OverlayType.MARKER,
-              google.maps.drawing.OverlayType.POLYGON
-            ]
-          },
-          markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
-          circleOptions: {
-            fillColor: '#ffff00',
-            fillOpacity: 1,
-            strokeWeight: 5,
-            clickable: false,
-            editable: true,
-            zIndex: 1
-          }
-        });
-
-        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-            var newShape = e.overlay;
-            newShape.type = e.type;
-
-            all_shapes.push(newShape);
-
-            setSelection(newShape);
-
-            save_coordinates_to_array(newShape);
-
-            google.maps.event.addListener(newShape, 'click', function() {setSelection(newShape)});
-          });
-
-            google.maps.event.addListener(map, 'click', function(e) {clearSelection();});
-
-        drawingManager.setMap(map);
-        map.setCenter(marker.position);
-        marker.setMap(map);
-      }  //END init Map
-
-      //google.maps.event.addDomListener(window, 'load', init);
-
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1SJ3HV5ZGZkOfwO96Hku1mK2rl3sT_5I&libraries=visualization,drawing&callback=initMap"async defer></script>
-
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyAliuFROXxq9K-tkBr7WDMwsJBEPrAMqxY",
-        authDomain: "goplay-f0808.firebaseapp.com",
-        databaseURL: "https://goplay-f0808.firebaseio.com",
-        projectId: "goplay-f0808",
-        storageBucket: "",
-        messagingSenderId: "554942210651"
-      };
-  firebase.initializeApp(config);
-</script>
 </html>

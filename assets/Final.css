@@ -1,0 +1,115 @@
+#homeView {
+    text-align: center;
+    text-shadow: 5px 5px 5px #FF0000;
+}  
+
+
+
+#mapView .ui-content, #mapDiv {
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+} 
+		
+#homeView img {
+    width: 80%;
+    max-width: 600px;
+}
+
+#acc, #loc {
+    border: 2px solid #a1a1a1;
+    padding: 10px 10px;
+    margin: 10px 10px;
+    border-radius: 15px;
+    min-height: 20px;
+    -moz-border-radius: 15px;
+}
+
+html, body, #mapView, #mapContent, #mapDiv {
+	
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+}  
+
+#videoList h3 {
+	margin: 1em 0.1em 0.5em 0.1em;
+	height: 2.5em;
+	font-size: 1em;
+	overflow: hidden;	
+}
+
+#videoList img {
+	width: 95%;
+}
+
+#videoList a {
+	text-decoration: none;
+	color: #777;
+}
+
+#videoPlayer .ui-content {
+	margin: 0;
+	padding: 0;
+}
+
+#myPlayer iframe {
+	width: 100%;
+	height: 500px;
+}
+
+#myPlayer h3, #videoPlayer p {
+	padding: 5%;
+	margin: 5%;
+}
+
+#photoList.ui-gird-c {
+	width: 93%;
+	padding: 0;
+	margin: 0 auto;
+}
+
+#photoList .ui-block-a, #photoList .ui-block-b, #photoList .ui-block-c {
+	width: 30%;
+	height: 30%;
+	padding: 0.5%;
+}
+#photoList img {
+	width: 100%;
+	-webkit-border-radius: 0.7em;
+	-moz-border-radius: 0.7em;
+	border-radius: 0.7em;
+}
+
+#showPhoto {
+	background: black;
+}
+
+#showPhoto img {
+	width: 100%;
+	max-width: 1024px;
+}
+
+#showPhoto .ui-content {
+	width: 100%;
+	padding: 0;
+}
+
+
+	
+.ui-icon-wvc_video {
+    background-image: url("../images/icon_video.png");
+	
+}
+
+
+.ui-icon-wvc_blog {
+	background-image: url("../images/icon_blog.png");
+
+}
+
+
+
+

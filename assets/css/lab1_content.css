@@ -1,0 +1,11 @@
+#menu a{
+	text-decoration: none;
+}
+
+#menu a:hover{
+	text-decoration:underline;
+}
+
+#menu a:visited{
+	color: #FF6633;
+}
