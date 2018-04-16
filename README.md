@@ -21,12 +21,11 @@ The third page is called the all data page.  This page is all the data captured 
 
 ![screen shot 2018-04-16 at 7 32 18 pm](https://user-images.githubusercontent.com/9308094/38840569-5aa2ada8-41ae-11e8-908a-1e8f0129a82a.png)
 
-
-
-
-
+![screen shot 2018-04-16 at 7 32 33 pm](https://user-images.githubusercontent.com/9308094/38840594-7eba8aee-41ae-11e8-8198-478d88a0f301.png)
 
 API's to connect with
+
+Google Maps API v3 
 
 Nike - http://dev.nike.com/activities/list_users_activities
 
